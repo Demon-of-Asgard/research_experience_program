@@ -155,10 +155,7 @@ public:
 
 
     // State outputs
-    void output_vsnap(const double, const int);
-    void output_zsnap(const double, const int);
-    void full_snap(const FieldVar*, std::string );
-    void dump_rho_v(const FieldVar *, const double, std::string);
+    void dump_rho(const FieldVar *, const uint);
 
     // Binary file ops
     void write_state(unsigned int);
@@ -175,7 +172,6 @@ public:
     void dcon(const Pol*, const Pol*, M*, int);
     void analyse(const FieldVar *, const Pol *, uint, uint);
     void surv_prob(const FieldVar *, const FieldVar *, const uint );
-    void v_distr_of_surv_prob(const FieldVar *, const FieldVar *, const uint );
 };
 
 

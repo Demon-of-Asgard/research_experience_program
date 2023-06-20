@@ -182,45 +182,4 @@ void NuOsc::surv_prob(const FieldVar *ivstate, const FieldVar *ivstate0, uint t)
     surv_prob_ofstream.close();
 }
 
-/*---------------------------------------------------------------------------*/
-
-void NuOsc::v_distr_of_surv_prob(const FieldVar *ivstate, const FieldVar *ivstate0, const uint t)
-{
-    /*
-      Survival probabilities of each mode averaged over the domain at a give time.
-    */
-
-    std::ofstream av_spv_ofstream;
-    std::string av_spv_fname = "dom_avrgd_surv_prob_" + std::to_string(t) + "_.dat";
-    av_spv_ofstream.open(av_spv_fname, std::ofstream::out | std::ofstream::trunc);
-    if (!av_spv_ofstream)
-    {
-        std::cout << "Unable to open " << av_spv_fname << std::endl;
-        return;
-    }
-    else
-    {
-        av_spv_ofstream << "# [vz, <P_ee>(v), <P_bee>(v)]" << std::endl;
-    }
-    for (int i = 0; i < nvz; i++)
-    {
-        double P_ee = 0;
-        double P_bee = 0;
-        double P_ee0 = 0;
-        double P_bee0 = 0;
-
-        for (int j = 0; j < nz; j++)
-        {
-            P_ee += ivstate->ee[idx(i, j)] * dz;
-            P_bee += ivstate->bee[idx(i, j)] * dz;
-            P_ee0 += ivstate0->ee[idx(i, j)] * dz;
-            P_bee0 += ivstate0->bee[idx(i, j)] * dz;
-        }
-        av_spv_ofstream << std::scientific << vz[i] << "\t"
-                        << (P_ee / P_ee0) << "\t"
-                        << (P_bee / P_bee0) << std::endl;
-    }
-    av_spv_ofstream.close();
-}
-
 /*------------------------------- EOF ------------------------------------*/
