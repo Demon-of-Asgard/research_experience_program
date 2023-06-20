@@ -1,0 +1,7 @@
+*.dat
+main
+main.o
+*.bin
+*.err
+*.log
+*.out
