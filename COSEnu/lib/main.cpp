@@ -175,6 +175,9 @@ int main(int argc, char *argv[])
 	if (!is_ff)
 	{
 		state.surv_prob(state.v_stat, v_stat0, 0);
+
+		state.dump_rho(state.v_stat, 0);
+
 	}
 
 	// ......................... EVOLVING THE STATE ......................... //

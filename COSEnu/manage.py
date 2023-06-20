@@ -28,7 +28,7 @@ instructions = """ General instructions:
     
         [ INITIALIZE ]
         ==============================================================
-        python manage.py [opt] [scheme]
+        python manage.py [opt] [scheme] --s [submission_target]
         [opt] : Initialize (= Configure + compile)  the jobs.
             opt : 
                 --score, --mcore, --acc
@@ -38,11 +38,13 @@ instructions = """ General instructions:
             scheme:
                 fv : Simulation using finite volume method with 7th order WENO.
                 fd : Simulation using finite difference method with 3rd order Kreiss-Oliger dissipation.
+            submission_target:
+                loc : local system. e.g. laptop
+                condor : submit with condor queueing system.
 	
-
         eg:
-            Run finite volume scheme     : $ python manage.py  --acc fv 
-            Run finite difference scheme : $ python manage.py  --acc fd
+            Run finite volume scheme  with condor   : $ python manage.py  --acc fv --s condor
+            Run finite difference scheme on laptop : $ python manage.py  --acc fd --s loc
 
 
         [ RUN ]
@@ -348,12 +350,13 @@ def run(jobs_list, scheme_dir_path, submit_mod):
             with open (condor_submission_file, 'w') as f:
                 
                 f.write ("universe = vanilla" + "\n")
+                f.write (f"ID = {job}" + "\n")
                 f.write (f"request_cpus = {jdl_configs['ncpu']}" + "\n")
                 f.write (f"request_memory = {jdl_configs['ram']}" + "\n")
                 f.write (f"request_disk = {jdl_configs['storage']}" + "\n")
-                f.write ("error = $(process).err" + "\n")
-                f.write ("output = $(process).out" + "\n")
-                f.write ("log = $(process).log" + "\n")
+                f.write ("error = $(ID).err" + "\n")
+                f.write ("output = $(ID).out" + "\n")
+                f.write ("log = $(ID).log" + "\n")
                 f.write (f"executable = {TARGET}" + "\n")
                 f.write (f"arguments = --id {job} --conf {config_file}" + "\n")
                 f.write ("should_transfer_files = yes" + "\n")

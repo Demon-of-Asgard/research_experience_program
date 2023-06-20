@@ -7,3 +7,6 @@ lib_bk/*
 *(copy)*
 .vscode/*
 .ipynb_checkpoints
+*.err
+*.log
+*.out
