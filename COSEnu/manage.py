@@ -347,13 +347,14 @@ def run(jobs_list, scheme_dir_path, submit_mod):
 
                 configs = yaml.load(f, Loader=yaml.FullLoader)
 
-            jdl_configs = configs["jdl"]
+            jdl_configs = configs["condor_requests"]
 
             with open (condor_submission_file, 'w') as f:
+                
                 f.write ("universe = vanilla" + "\n")
                 f.write (f"request_cpus = {jdl_configs['ncpu']}" + "\n")
-                f.write (f"request_memory = {jdl_configs['memory']}" + "\n")
-                f.write (f"request_disk = {jdl_configs['disk']}" + "\n")
+                f.write (f"request_memory = {jdl_configs['ram']}" + "\n")
+                f.write (f"request_disk = {jdl_configs['storage']}" + "\n")
                 f.write ("error = $(process).err" + "\n")
                 f.write ("output = $(process).out" + "\n")
                 f.write ("log = $(process).log" + "\n")
