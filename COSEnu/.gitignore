@@ -3,7 +3,6 @@ main.o
 *.dat
 *.bin
 *.txt
-*.ipynb
 lib_bk/*
 *(copy)*
 .vscode/*
