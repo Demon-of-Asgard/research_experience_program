@@ -394,9 +394,12 @@ def main(mode, scheme, submit_mod = "loc", do_submit = False):
         return
     
 #Uncomment this section to run the jobs automatically.
-    if (cp_stat == "success") and do_submit:
-        """Run jobs"""
-        run_stat = run(jobs_list, scheme_dir_path, submit_mod)
+    if (cp_stat == "success"):
+        if do_submit:
+            """Run jobs"""
+            run_stat = run(jobs_list, scheme_dir_path, submit_mod)
+        else:
+            print ("Did not ask to submit the job.")
     else:
         if (not do_submit):
             print(f"Copying executable failed.")
