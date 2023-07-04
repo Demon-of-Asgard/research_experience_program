@@ -130,7 +130,7 @@ def export_job_configs(config_dict, path):
 def rm(path):
     if os.path.exists(path):
         stat = os.remove(path)
-        print(f'{path} removed.')
+        # print(f'{path} removed.')
     else:
         print(f"{path} does not exist.")
 
@@ -238,6 +238,7 @@ def configure(scheme="fv"):
                     'omega': config['omega'],
                     'theta': config['theta'],
                     'mu': config['mu'],
+                    'perturbation_size' : config['perturbation_size'],
                     'N_ITER': N_ITER,
                     'ANAL_EVERY': ANAL_EVERY,
                     'n_dump_rho' : config['n_dump_rho'],
@@ -325,6 +326,7 @@ def cp_exe(scheme_dir_path, exe_path):
                 shutil.copy(exe_path, dst)
             else:
                 shutil.copy(exe_path, dst)
+            print (f"copied {exe_path} to {dst}")
                 
     return "success", jobs_list
     
@@ -400,6 +402,7 @@ def main(mode, scheme, submit_mod = "loc", do_submit = False):
             run_stat = run(jobs_list, scheme_dir_path, submit_mod)
         else:
             print ("Did not ask to submit the job.")
+            return 
     else:
         if (not do_submit):
             print(f"Copying executable failed.")

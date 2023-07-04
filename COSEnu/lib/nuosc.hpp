@@ -35,12 +35,14 @@ public:
     real st;
     real mu;
     real pmo; // 1.0 for normal mass ordering, -1.0 for inverted mass ordering, 0.0 for no vacuum term
+
+    double perturbation_size;
     std::string ID;
     std::string SCHEME;
     std::ofstream outf;
 
     NuOsc(real z0_, real z1_, int nz_, int nvz_, real CFL_, int gz_,
-          std::string ID_, std::string SCHEME_) : phy_time(0.)
+          std::string ID_, std::string SCHEME_, double perturbation_size_) : phy_time(0.)
     {
         ID = ID_;
         SCHEME = SCHEME_;
@@ -55,6 +57,8 @@ public:
         gz = gz_; // Width of z-buffer zone. 4 for 2nd-order of d/dz.
 
         ko = 1.0e-1;
+
+        perturbation_size = perturbation_size_;
 
         size = (nz + 2 * gz) * (nvz);
         Z = new double[nz];
@@ -98,7 +102,10 @@ public:
                   << "\t"
                   << "gz: " << gz << std::endl
                   << "\t"
-                  << "CFL: " << CFL << std::endl;
+                  << "CFL: " << CFL 
+                  << "\n\t"
+                  << "perturbation_size: " << perturbation_size
+                  << std::endl;
         std::cout << draw(50, "#") << std::endl;
     }
     ~NuOsc()

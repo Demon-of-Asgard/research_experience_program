@@ -66,6 +66,8 @@ public:
     double theta = 0.0;
     double mu = 1.0;
 
+    double perturbation_size = 0.0;
+
     //Analysis related
 
     int n_dump = 0;
@@ -165,6 +167,11 @@ Params::Params(std::string CONFIG_FILE)
                 string_to_type(value, v1);
                 is_v1 = true;
             }
+
+            else if (key == "perturbation_size")
+            {
+                string_to_type(value, perturbation_size);
+            }
             else if (key == "N_ITER")
             {
                 string_to_type(value, N_ITER);
@@ -231,7 +238,8 @@ Params::Params(std::string CONFIG_FILE)
                   << "Exiting." << std::endl;
         exit(0);
     }
-    if (n_dump > 0)
+#endif
+if (n_dump > 0)
     {   
         dump_interval = (int)(N_ITER/n_dump);
         if (dump_interval < 1)
@@ -243,5 +251,4 @@ Params::Params(std::string CONFIG_FILE)
     {   
         dump_interval = N_ITER + 1;
     } 
-#endif
 }

@@ -182,10 +182,9 @@ void NuOsc::read_G0()
 
 /*---------------------------------------------------------------------------*/
 
-void NuOsc::dump_rho(const FieldVar *ivstate, const uint t)
+void NuOsc::dump_rho(const FieldVar *ivstate, const uint t_)
 {
-
-    std::string rdump_filename = ID + "_rho_" + std::to_string(t) + ".dat";
+    std::string rdump_filename = ID + "_rho_" + std::to_string(t_) + ".dat";
     std::ofstream rsnap_ofstream;
     rsnap_ofstream.open(rdump_filename, std::ofstream::out | std::ofstream::trunc);
     

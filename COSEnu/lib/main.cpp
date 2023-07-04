@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 
 	// ......................... CREATING STATE ......................... //
 
-	NuOsc state(pars.z0, pars.z1, pars.nz, pars.nvz, pars.CFL, pars.gz, ID, pars.SCHEME);
+	NuOsc state(pars.z0, pars.z1, pars.nz, pars.nvz, pars.CFL, pars.gz, ID, pars.SCHEME, pars.perturbation_size);
 	N_ITER = pars.N_ITER;
 	std::cout << std::setw(30) << "NUMBER OFITERATIONS: " << N_ITER << std::endl;
 
@@ -177,44 +177,44 @@ int main(int argc, char *argv[])
 		state.surv_prob(state.v_stat, v_stat0, 0);
 
 		state.dump_rho(state.v_stat, 0);
-
 	}
 
 	// ......................... EVOLVING THE STATE ......................... //
 
 	auto start = std::chrono::steady_clock::now();
 
-	for (int t = t0; t < N_ITER; t++)
+	for (int t_iter = t0; t_iter < N_ITER; t_iter++)
 	{
 		state.step_rk4();
 
 		// ......................... Analysis ......................... //
 
-		if (t % pars.ANAL_EVERY == 0)
+		if (t_iter % pars.ANAL_EVERY == 0)
 		{
 #ifdef COLL_OSC_ON
 			// Analyze to note the deviation of conserved quantities.
-			state.analyse(state.v_stat, P0, 0, t);
+			state.analyse(state.v_stat, P0, 0, t_iter);
 #endif
 			// Estimates the survival probabilities.
-			state.surv_prob(state.v_stat, v_stat0, t);
+			state.surv_prob(state.v_stat, v_stat0, t_iter);
 		}
 		// std::cout << "dump_interval: " << pars.dump_interval << "\n";
-		if (t % pars.dump_interval == 0)
+
+		if ((t_iter % pars.dump_interval) == 0)
 		{
-			state.dump_rho(state.v_stat, t);
+			state.dump_rho(state.v_stat, t_iter);
 		}
 
-		if (t % ((int)(N_ITER) / 10) == 0)
+		if (t_iter % ((int)(N_ITER) / 10) == 0)
 		{
 			// Write the state of the field variable to a binary file
 			// so that the execution of the simulation can be restarted
 			// from the last stored values (using the --ff flag)
 			// if there is any kind of aboting.
-			state.write_state(t);
-			
+			// state.write_state(t);
+
 			std::cout << " " << std::setprecision(4)
-					  << (int)(t * 100.0 / (N_ITER - 1)) << " %"
+					  << (int)(t_iter * 100.0 / (N_ITER - 1)) << " %"
 					  << std::endl;
 		}
 	}

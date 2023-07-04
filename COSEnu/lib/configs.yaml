@@ -24,17 +24,21 @@ end_time  : 600 # Physical end time
 
 #----------------------------------------------------------------#
 
+perturbation_size : 1e-4
+
+#----------------------------------------------------------------#
+
 # Switch on/off advection.
 advection_off : False # Options -> True, False
 
 # Switch on/off vacuum oscillation
-vac_osc_on : False # options -> True, False
+vac_osc_on : False  # options -> True, False
 pmo   : 1.0        # 1.0 -> normal mass ordering, -1.0 -> inverted mass ordering, 0.0 -> no vacuum term.
 omega : 1.0        # \Dedlta m^2/2E.
 theta : 37         # Vacuum mixing angle in degrees.
 
 # Switch on/off collective oscillations
-collective_osc_on : True  # Options -> True, False
+collective_osc_on : False  # Options -> True, False
 mu : 1.0                  # \sqrt{2} G_F n_{\nu_e}
 #----------------------------------------------------------------#
 # ANALYSIS
