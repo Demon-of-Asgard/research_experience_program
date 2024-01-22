@@ -1,0 +1,13 @@
+universe = vanilla
+ID = 6000_64_0.4
+request_cpus = 32
+request_memory = 10G
+request_disk = 20G
+error = $(ID).err
+output = $(ID).out
+log = $(ID).log
+executable = main
+arguments = --id 6000_64_0.4 --conf job.config
+should_transfer_files = yes
+transfer_input_files = job.config
+queue 1

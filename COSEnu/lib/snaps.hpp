@@ -187,7 +187,7 @@ void NuOsc::dump_rho(const FieldVar *ivstate, const uint t_)
     std::string rdump_filename = ID + "_rho_" + std::to_string(t_) + ".dat";
     std::ofstream rsnap_ofstream;
     rsnap_ofstream.open(rdump_filename, std::ofstream::out | std::ofstream::trunc);
-    
+
     if (!rsnap_ofstream)
     {
         std::cout << "Run time err report from snaps.hpp -> void NuOsc::full_snap\n";
@@ -202,17 +202,15 @@ void NuOsc::dump_rho(const FieldVar *ivstate, const uint t_)
             {
                 int ij = idx(i, j);
                 rsnap_ofstream << Z[j] << "\t" << vz[i] << "\t"
-                               << std::setprecision(16) 
-                               
-                               << ivstate->ee[ij] << "\t" 
-                               << ivstate->xx[ij] << "\t"
-                               << ivstate->ex_re[ij] << "\t"
-                               << ivstate->ex_im[ij] << "\t"
+                               << std::setprecision(16)
 
-                               << ivstate->bee[ij] << "\t" 
-                               << ivstate->bxx[ij] << "\t"
-                               << ivstate->bex_re[ij] << "\t"
-                               << ivstate->bex_im[ij] << "\n";
+                               << (ivstate->ee[ij] - ivstate->xx[ij]) / G0->G[ij] << "\t"
+                               << 2.0 * ivstate->ex_re[ij] / G0->G[ij] << "\t"
+                               << -2.0 * ivstate->ex_im[ij] / G0->G[ij] << "\t"
+
+                               << (ivstate->bee[ij] - ivstate->bxx[ij]) / G0->bG[ij] << "\t"
+                               << 2.0 * ivstate->bex_re[ij] / G0->bG[ij] << "\t"
+                               << 2.0 * ivstate->bex_im[ij] / G0->bG[ij] << "\n";
             }
             rsnap_ofstream << "\n";
         }

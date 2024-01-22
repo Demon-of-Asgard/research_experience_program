@@ -170,6 +170,8 @@ def configure(scheme="fv"):
 
         if config["vac_osc_on"] == True:
             presets.write("#define VAC_OSC_ON\n")
+        if config["mat_osc_on"]==True:
+            presets.write("#define MAT_OSC_ON\n")
         if config["collective_osc_on"] == True:
             presets.write("#define COLL_OSC_ON\n")
         if config["advection_off"] == True:

@@ -4,12 +4,12 @@ void NuOsc::WENO7(const double *in, double *rflux, double *lflux)
 {
     /*
         7th order WENO reconstruction.
-        Inputs: 
+        Inputs:
             u   -> Location about which the reconstruction is performed.
             s   -> s = +1 for forward flux, s = -1 for backward flux.
 
-        Output: 
-            uul, uur -> Value of the flux at i+1/2 or i-1/2.  
+        Output:
+            uul, uur -> Value of the flux at i+1/2 or i-1/2.
     */
 
     double eps = 1E-6;
@@ -24,7 +24,7 @@ void NuOsc::WENO7(const double *in, double *rflux, double *lflux)
     double gamma2l = 18. / 35.;
     double gamma3l = 4. / 35.;
 
-    //Smoothness Indices of the stencils.
+    // Smoothness Indices of the stencils.
     /*
         SI0 -> for stensil S0 = {i, i+1, i+2, i+3} -> r = 0 left shift.
         SI1 -> for stensil S1 = {i-1, i, i+1, i+2} -> r = 1 left shift.
@@ -32,8 +32,8 @@ void NuOsc::WENO7(const double *in, double *rflux, double *lflux)
         SI2 -> for stensil S3 = {i-3, i-2, i-1, i} -> r = 3 left shift.
     */
 #pragma omp parallel for collapse(2)
-#pragma acc parallel loop collapse(2) //default(present)
-//private(u, s, w0r_, w1r_, w2r_, w3r_, w0r, w1r, w2r, w3r, wr, w0l_, w1l_, w2l_, w3l_, w0l, w1l, w2l, w3l, wl,u0r, u1r, u2r, u3r, u0l, u1l, u2l, u3l, SI0, SI1, SI2, SI3)
+#pragma acc parallel loop collapse(2) // default(present)
+    // private(u, s, w0r_, w1r_, w2r_, w3r_, w0r, w1r, w2r, w3r, wr, w0l_, w1l_, w2l_, w3l_, w0l, w1l, w2l, w3l, wl,u0r, u1r, u2r, u3r, u0l, u1l, u2l, u3l, SI0, SI1, SI2, SI3)
     for (int i = 0; i < nvz; i++)
     {
         for (int j = -1; j < nz + 1; j++)
@@ -68,7 +68,7 @@ void NuOsc::WENO7(const double *in, double *rflux, double *lflux)
 
             rflux[idx(i, j)] = w0r * u0r + w1r * u1r + w2r * u2r + w3r * u3r;
 
-            //Left going flux
+            // Left going flux
             double w0l_ = gamma0l / pow(eps + SI0, 2);
             double w1l_ = gamma1l / pow(eps + SI1, 2);
             double w2l_ = gamma2l / pow(eps + SI2, 2);
@@ -94,7 +94,7 @@ void NuOsc::WENO7(const double *in, double *rflux, double *lflux)
 
 void NuOsc::calFlux(const FieldVar *in, Flux *out)
 {
-    //right flux
+    // right flux
     WENO7(in->ee, out->rflux->ee, out->lflux->ee);
     WENO7(in->xx, out->rflux->xx, out->lflux->xx);
     WENO7(in->ex_re, out->rflux->ex_re, out->lflux->ex_re);
@@ -116,7 +116,7 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
     updateBufferZone(flux->lflux);
 
 #pragma omp parallel for collapse(2)
-#pragma acc parallel loop  gang /*async*/ // default(present) //gang //private(fac, s, ij, ee, xx, exr, exi, bee, bexx, bexr, bexi)
+#pragma acc parallel loop gang /*async*/ // default(present) //gang //private(fac, s, ij, ee, xx, exr, exi, bee, bexx, bexr, bexi)
     for (int i = 0; i < nvz; i++)
     {
 #pragma acc loop vector private(fac, s, ij, ee, xx, exr, exi, bee, bexx, bexr, bexi)
@@ -155,7 +155,7 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
             out->bee[idx(i, j)] += fac * fabs(1 + s) / 2 * (flux->rflux->bee[ij] - flux->rflux->bee[ij - 1]) + fac * fabs(1 - s) / 2 * (flux->lflux->bee[ij + 1] - flux->lflux->bee[ij]);
             out->bxx[idx(i, j)] += fac * fabs(1 + s) / 2 * (flux->rflux->bxx[ij] - flux->rflux->bxx[ij - 1]) + fac * fabs(1 - s) / 2 * (flux->lflux->bxx[ij + 1] - flux->lflux->bxx[ij]);
             out->bex_re[idx(i, j)] += fac * fabs(1 + s) / 2 * (flux->rflux->bex_re[ij] - flux->rflux->bex_re[ij - 1]) + fac * fabs(1 - s) / 2 * (flux->lflux->bex_re[ij + 1] - flux->lflux->bex_re[ij]);
-            out->bex_im[idx(i, j)] += fac * fabs(1 + s) / 2 * (flux->rflux->bex_im[ij] - flux->rflux->bex_im[ij - 1]) + fac * fabs(1 - s) / 2 * (flux->lflux->bex_im[ij + 1] - flux->lflux->bex_im[ij]);     
+            out->bex_im[idx(i, j)] += fac * fabs(1 + s) / 2 * (flux->rflux->bex_im[ij] - flux->rflux->bex_im[ij - 1]) + fac * fabs(1 - s) / 2 * (flux->lflux->bex_im[ij + 1] - flux->lflux->bex_im[ij]);
 #endif
 
 #ifdef VAC_OSC_ON
@@ -164,10 +164,22 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
             out->ex_re[idx(i, j)] += -2.0 * ct * exi[0] * pmo;
             out->ex_im[idx(i, j)] += (2.0 * ct * exr[0] + st * (ee[0] - xx[0])) * pmo;
 
-            out->bee[idx(i, j)] += -2.0 * st * bexi[0] * pmo;
+            out->bee[idx(i, j)] += -0.0;
             out->bxx[idx(i, j)] += 2.0 * st * bexi[0] * pmo;
             out->bex_re[idx(i, j)] += -2.0 * ct * bexi[0] * pmo;
             out->bex_im[idx(i, j)] += (2.0 * ct * bexr[0] + st * (bee[0] - bxx[0])) * pmo;
+#endif
+
+#if defined(MAT_OSC_ON)
+            out->ee[idx(i, j)] += 0.0;
+            out->xx[idx(i, j)] += 0.0;
+            out->ex_re[idx(i, j)] += Hm[j] * exi[0];
+            out->ex_im[idx(i, j)] += -Hm[j] * exr[0];
+
+            out->bee[idx(i, j)] += 0.0;
+            out->bxx[idx(i, j)] += 0.0;
+            out->bex_re[idx(i, j)] += -Hm[j] * bexi[0];
+            out->bex_im[idx(i, j)] += Hm[j] * bexr[0];
 #endif
 
 #ifdef COLL_OSC_ON
@@ -181,7 +193,7 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
             double Ibexi = 0.0;
 
             double mut = mu;
-#pragma acc loop seq /* vector*/ reduction(+:Iee, Ixx, Iexr, Iexi, Ibee, Ibxx, Ibexr, Ibexi) private(eep, xxp, expr, expi, beep, bxxp, bexpr, bexpi) //default(present)
+#pragma acc loop seq /* vector*/ reduction(+ : Iee, Ixx, Iexr, Iexi, Ibee, Ibxx, Ibexr, Ibexi) private(eep, xxp, expr, expi, beep, bxxp, bexpr, bexpi) // default(present)
             for (int k = 0; k < nvz; k++)
             {
 
@@ -219,4 +231,3 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
         }
     }
 }
-
