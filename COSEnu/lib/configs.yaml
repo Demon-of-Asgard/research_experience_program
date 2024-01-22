@@ -3,7 +3,7 @@
 
 # Spatial domain specifics.
 zrange: [-600, 600]
-nzs: [2400]
+nzs: [1200]
 CFLS: [0.4]
 
 #----------------------------------------------------------------#
@@ -11,7 +11,7 @@ CFLS: [0.4]
 # Phase-space specifics.
 v0: -1.0
 v1: 1.0
-nvzs: [64]
+nvzs: [32]
 
 #----------------------------------------------------------------#
 
@@ -54,7 +54,7 @@ n_dump_rho: 100 # number of times density matrix elements has to be dumped.
 #----------------------------------------------------------------#
 
 # Folder names
-folder_fv: "mat_osc_lin_a_m1em3"
+folder_fv: "lin_a_m1em3"
 folder_fd: "output_from_fd"
 
 #----------------------------------------------------------------#
