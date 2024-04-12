@@ -1,17 +1,19 @@
 # CONFIGURATIONS FOR THE SIMULATION.
+#python manage.py --mcore fd --s condor
 #----------------------------------------------------------------#
 
 # Spatial domain specifics.
-zrange: [-600, 600]
-nzs: [1200]
-CFLS: [0.4]
+zrange: [-100, 100]
+nzs: [1] #[1,10,100,500,1000,2000] #[3600]
+CFLS: [0.0001,0.00001]
+#CFLS: [0.0001,0.001]
 
 #----------------------------------------------------------------#
 
 # Phase-space specifics.
 v0: -1.0
 v1: 1.0
-nvzs: [32]
+nvzs: [2] #[2,8,32,64,90,180] #[32]
 
 #----------------------------------------------------------------#
 
@@ -19,28 +21,28 @@ boundary: periodic # Options ->  periodic, open
 
 #----------------------------------------------------------------#
 
-end_time: 1200 # Physical end time
+end_time: 800 # Physical end time
 
 #----------------------------------------------------------------#
 
-perturbation_size: 1e-2
+perturbation_size: 1e-8 #1e-2
 
 #----------------------------------------------------------------#
 
 # Switch on/off advection.
-advection_off: False # Options -> True, False
+advection_off: True # Options -> True, False
 
 # Switch on/off vacuum oscillation
-vac_osc_on: False # options -> True, False
+vac_osc_on: True # options -> True, False
 pmo: 1.0 # 1.0 -> normal mass ordering, -1.0 -> inverted mass ordering, 0.0 -> no vacuum term.
-omega: 1.0 # \Dedlta m^2/2E.
-theta: 37 # Vacuum mixing angle in degrees.
+omega: 0.01 #1e-2 #1.0 #1e-4 \Dedlta m^2/2E.
+theta: 0 # 37 Vacuum mixing angle in degrees.
 
-mat_osc_on: True
+mat_osc_on:  True #True
 
 # Switch on/off collective oscillations
 collective_osc_on: True # Options -> True, False
-mu: 1.0 # \sqrt{2} G_F n_{\nu_e}
+mu: 1.0 #1.0 \sqrt{2} G_F n_{\nu_e}
 #----------------------------------------------------------------#
 # ANALYSIS
 #----------------------------------------------------------------#
@@ -54,12 +56,13 @@ n_dump_rho: 100 # number of times density matrix elements has to be dumped.
 #----------------------------------------------------------------#
 
 # Folder names
-folder_fv: "lin_a_m1em3"
-folder_fd: "output_from_fd"
+#folder_fv: "fv_hetg_24_flat_mu_100_ar_0.7_run5" #"lin_a_m1em3"
+folder_fd: "fd_sajm_vdp_yvymys_nnm_N1_A2_tur3_mu_100_Lmu_300_ar_0.7_run1" #"output_from_fd"
+#fd_hetg_24_flat_rap_inm_mu_100_Lmu_300_ar_0.7_run1
 
 #----------------------------------------------------------------#
 
 condor_requests:
-  ncpu: 32
+  ncpu: 6
   ram: 10G
   storage: 20G

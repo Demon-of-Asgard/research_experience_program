@@ -63,7 +63,10 @@ double g(double v, double v0, double sigma)
 
 inline double eps(double z, double z0, double amp)
 {
-    return amp * exp(-(z - z0) * (z - z0) / 50.0);
+    //return amp * exp(-(z - z0) * (z - z0) / 50.0);
+    //return amp * exp(-(z - z0) * (z - z0) / 0.0000001);
+    return amp * rand() / RAND_MAX;
+    //return amp;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -123,3 +126,4 @@ double L(double x, unsigned int order)
 }
 
 /*---------------------------------------------------------------------------*/
+

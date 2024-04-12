@@ -175,7 +175,7 @@ void NuOsc::surv_prob(const FieldVar *ivstate, const FieldVar *ivstate0, uint t)
         }
     }
     surv_prob_ofstream << t << "\t"
-                       << std::scientific
+                       << std::scientific //modify here
                        << num_Pee / dnom_Pee << "\t"
                        << num_Pbee / dnom_Pbee << std::endl;
 

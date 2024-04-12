@@ -77,6 +77,7 @@ public:
 
         dz = (z1 - z0) / nz;
         dv = (vz1 - vz0) / (nvz); // cell-center
+        //dv = 1.0;
         dt = CFL * dz / vz1;
 
         for (int i = 0; i < nz; i++)
@@ -84,15 +85,21 @@ public:
             Z[i] = z0 + (i + 0.5) * dz;
         }
 
-        for (int i = 0; i < nvz; i++)
-        {
-            vz[i] = vz0 + (i + 0.5) * dv;
-            vw[i] = 1.0;
-        }
+        vz[0] = -1.0;
+        vz[1] = 1.0;
+  
+        // for (int i = 0; i < nvz; i++)
+        // {
+        //     //vz[i] = vz0 + (i + 0.5) * dv;
+        //     vz[i] = vz0 + (i) * dv;
+        //     vw[i] = 1.0;
+        // }
 
         for (int i = 0; i < nz; i++)
         {
-            Hm[i] = -1.0e-3 * (Z[i] + 600.0);
+            //Hm[i] = 300.0;
+
+            Hm[i] = 300.0 * (1+1.0e-3 * rand() / RAND_MAX); // * (Z[i] + 600.0); //-1.0e-3 * (Z[i] + 600.0);
         }
 
         std::cout << draw(50, "#") << std::endl;
