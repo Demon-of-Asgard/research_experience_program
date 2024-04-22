@@ -1,15 +1,3 @@
-include Makefile.inc
-
-TARGET= main
-OBJS  = main.o
-
-${TARGET}: ${OBJS}
-	$(CXX) $(OPT) $< -o $@ $(LIBS)
-	
-
-
-run:${TARGET}
-	./${TARGET}
-
-clean:
-	rm ${TARGET} ${OBJS}
+#!/bin/bash
+all:
+	pgc++ -fast -O3 -acc -Minfo=accel -ta=tesla:managed -o main main.cpp

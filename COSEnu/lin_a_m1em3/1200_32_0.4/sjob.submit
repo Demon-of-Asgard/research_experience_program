@@ -1,0 +1,4 @@
+#!/bin/bash
+#SBATCH --job-name=1200_32_0.4
+#SBATCH --cpus-per-task=20
+srun ./main --id 1200_32_0.4 --conf job.config
