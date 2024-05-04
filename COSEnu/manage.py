@@ -75,6 +75,7 @@ SOURCE = "main.cpp"
 GCC = "g++"
 PCC = "pgc++"
 OPT = "-fast -O3"
+MCOREOPT = "-O3 -fopenmp"
 STD = "-std=c++0x"
 
 # --------------------------------------------------------------------------------------------------
@@ -266,10 +267,14 @@ def configure(scheme="fv"):
     os.chdir(proj_dir)
 
     return "success", scheme_dir
-# --------------------------------------------------------------------------------------------------
-
+# ---------------------------------------------------------------------------------------------------
 def compi(comp_opt = "--acc"):
     """To compile the code"""
+
+    with open(batch_configs_file, "r") as con:
+        configs = yaml.load(con, Loader=yaml.FullLoader)
+    modules = configs["modules"]
+
     pwd = os.getcwd()
     os.chdir(resources_dir)
     exe_path = os.path.join(os.getcwd(), TARGET)
@@ -284,16 +289,27 @@ def compi(comp_opt = "--acc"):
             print(f"{TARGET} generated for singlecore job")
         else:
             return None, None
-
     elif comp_opt == "--mcore":
-        comp_stat = os.system(f"make")
-        # comp_stat = os.system(f"{PCC} {OPT} -ta=multicore -Minfo=accel -o {TARGET} {SOURCE}")
+        comp_stat = os.system(f"{GCC} {STD} {MCOREOPT} -o {TARGET} {SOURCE}")
         if comp_stat == 0:
-            print(f"{TARGET} generated for multicore job")
+            print(f"{TARGET} generated for muti-core job")
         else:
             return None, None
     elif comp_opt == "--acc":
-        comp_stat = os.system(f"{PCC} {OPT} -acc -Minfo=accel -ta=tesla:managed -o {TARGET} {SOURCE}")
+        #print('dsdfsfsdf')
+        with open ("compile.sh", "w") as f:
+            f.write("#!/bin/bash" + "\n")
+            f.write("module purge" + "\n")
+            for module in modules:
+                f.write(f"module load {module} \n")
+            f.write("make" + "\n")
+        os.system("chmod +x compile.sh")
+        with open ("Makefile", "w") as f:
+            f.write("#!/bin/bash" + "\n")
+            f.write("all:" + "\n")
+            f.write("\t" + f"{PCC} {OPT} -acc -Minfo=accel -ta=tesla:managed -o {TARGET} {SOURCE}" + "\n")
+
+        comp_stat = os.system(f"./compile.sh")
 
         if comp_stat == 0:
             print(f"{TARGET} generated for accelerated job")
@@ -307,6 +323,46 @@ def compi(comp_opt = "--acc"):
     if comp_stat == 0:
         stat = "success"
     return stat, exe_path
+# --------------------------------------------------------------------------------------------------
+# def compi(comp_opt = "--acc"):
+#     """To compile the code"""
+#     pwd = os.getcwd()
+#     os.chdir(resources_dir)
+#     exe_path = os.path.join(os.getcwd(), TARGET)
+
+#     rm(os.path.join(os.getcwd(), OBJECT))
+#     rm(os.path.join(os.getcwd(), TARGET))
+#     comp_stat = None
+
+#     if comp_opt == "--score":
+#         comp_stat = os.system(f"{GCC} {STD} -o {TARGET} {SOURCE}")
+#         if comp_stat == 0:
+#             print(f"{TARGET} generated for singlecore job")
+#         else:
+#             return None, None
+
+#     elif comp_opt == "--mcore":
+#         comp_stat = os.system(f"make")
+#         # comp_stat = os.system(f"{PCC} {OPT} -ta=multicore -Minfo=accel -o {TARGET} {SOURCE}")
+#         if comp_stat == 0:
+#             print(f"{TARGET} generated for multicore job")
+#         else:
+#             return None, None
+#     elif comp_opt == "--acc":
+#         comp_stat = os.system(f"{PCC} {OPT} -acc -Minfo=accel -ta=tesla:managed -o {TARGET} {SOURCE}")
+
+#         if comp_stat == 0:
+#             print(f"{TARGET} generated for accelerated job")
+#         else:
+#             return None, None
+#     else:
+#         print(f"Invalid compilation option {comp_opt}")
+    
+#     os.chdir(pwd)
+#     stat = "failed"
+#     if comp_stat == 0:
+#         stat = "success"
+#     return stat, exe_path
 # --------------------------------------------------------------------------------------------------
 
 def cp_exe(scheme_dir_path, exe_path):
@@ -372,16 +428,25 @@ def run(jobs_list, scheme_dir_path, submit_mod):
                 configs = yaml.load(f, Loader=yaml.FullLoader)
             
             slurm_requests = configs["slurm_requests"]
+            
+
+
 
             with open("sjob.submit", "w") as f:
                 f.write("#!/bin/bash" + "\n")
+                
                 f.write(f"#SBATCH --job-name={job}" + "\n")
                 if slurm_requests["GPU"]["enable"]:
                     f.write(f"#SBATCH --partition={slurm_requests['GPU']['partition']}" + "\n")
                     f.write(f"#SBATCH --gres=gpu:{slurm_requests['GPU']['ngres']}" + "\n")
-                f.write(f"#SBATCH --cpus-per-task={slurm_requests['cpus-per-task']}" + "\n")
-                for module in slurm_requests['modules']:
+                
+                if slurm_requests["CPU"]["enable"]:
+                    f.write(f"#SBATCH --cpus-per-task={slurm_requests['CPU']['cpus-per-task']}" + "\n")
+                    #f.write(f"module {slurm_requests['CPU']['purge']}" + "\n")
+                    f.write(f"#SBATCH --partition={slurm_requests['CPU']['partition']}" + "\n")
+                for module in configs['modules']:
                     f.write(f"module load {module}" + "\n")
+
                 f.write(f"srun ./{TARGET} --id {job} --conf {config_file}" + "\n")
         
             os.system("sbatch sjob.submit")

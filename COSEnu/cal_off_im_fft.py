@@ -41,8 +41,8 @@ for h in os.listdir(path):
     if 'run1' not in h:
         print('run conti')
         continue
-    if 'inm' not in h:
-        print('inm conti')
+    if 'Z01' not in h:
+        print('Z01 conti')
         continue
     cc=0
     if 'jpg' in h:

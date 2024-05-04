@@ -4,13 +4,13 @@ void NuOsc::initialize()
     Initialize the components of \rho and \bar{\rho}
     here.
 */
-    double signu =  10000.0;  //0.6;
-    double sigbnu = 10000.0; //0.5;
+    /*double signu =  10000.0;  //0.6;
+    double sigbnu = 10000.0; //0.5;*/
     double alpha = 0.7; //0.9;
     double epsn;
     double epsnq;
-    double epsp;
-    double epspq;
+    /*double epsp;
+    double epspq;*/
     std::ofstream g_file(ID + "_G0.bin",std::ofstream::out | std::ofstream::binary);
     if(!g_file)
     {
@@ -31,10 +31,12 @@ void NuOsc::initialize()
     */
     for (int j = 0; j < nz; j++)
     {
+        /*
         //epsn=0;
         //epsnq=1;
         // epsn=eps(0.0, 0.0, perturbation_size);
         // epsnq=sqrt(1.0 - epsn * epsn); 
+        */
         for (int i = 0; i < nvz; i++)
         {
             //epsn=eps(Z[j], 0.0, perturbation_size);
@@ -43,8 +45,8 @@ void NuOsc::initialize()
             epsnq=sqrt(1.0 - epsn * epsn);  
             //G0->G[idx(i, j)] = g(vz[i], 1.0, signu);
             //G0->bG[idx(i, j)] = alpha * g(vz[i], 1.0, sigbnu);
-            G0->G[idx(i, j)] = 1.0 / (float)nvz; //g(vz[i], 1.0, signu);
-            G0->bG[idx(i, j)] = alpha * 1.0 / (float)nvz; //* g(vz[i], 1.0, sigbnu);
+            G0->G[idx(i, j)] = 1.0 / (float)nvz; /* //g(vz[i], 1.0, signu);*/
+            G0->bG[idx(i, j)] = alpha * 1.0 / (float)nvz; /* //* g(vz[i], 1.0, sigbnu);*/
             
             v_stat->ee[idx(i, j)]    = 0.5 * G0->G[idx(i, j)] * (1.0 + epsnq); 
             v_stat->xx[idx(i, j)]    = 0.5 * G0->G[idx(i, j)] * (1.0 - epsnq);

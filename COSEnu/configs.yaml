@@ -1,11 +1,12 @@
 # CONFIGURATIONS FOR THE SIMULATION.
-#python manage.py --mcore fd --s condor
+#python3 manage.py --mcore fd --s condor
+#python3 manage.py  --acc fv --s slurm
 #----------------------------------------------------------------#
 
 # Spatial domain specifics.
-zrange: [-1, 1]
+zrange: [-0.1, 0.1]
 nzs: [1,10,100,500,1000] #[3600]
-CFLS: [0.0001,0.00001]
+CFLS: [1,0.5,0.1,0.01]
 #CFLS: [0.0001,0.001]
 
 #----------------------------------------------------------------#
@@ -21,11 +22,11 @@ boundary: periodic # Options ->  periodic, open
 
 #----------------------------------------------------------------#
 
-end_time: 400 # Physical end time
+end_time: 200 # Physical end time
 
 #----------------------------------------------------------------#
 
-perturbation_size: 1e-8 #1e-2
+perturbation_size: 1e-2 #1e-2
 
 #----------------------------------------------------------------#
 
@@ -35,7 +36,7 @@ advection_off: True # Options -> True, False
 # Switch on/off vacuum oscillation
 vac_osc_on: True # options -> True, False
 pmo: 1.0 # 1.0 -> normal mass ordering, -1.0 -> inverted mass ordering, 0.0 -> no vacuum term.
-omega: -0.01 #1e-2 #1.0 #1e-4 \Dedlta m^2/2E.
+omega: 0.01 #1e-2 #1.0 #1e-4 \Dedlta m^2/2E.
 theta: 0 # 37 Vacuum mixing angle in degrees.
 
 mat_osc_on:  True #True
@@ -56,8 +57,8 @@ n_dump_rho: 100 # number of times density matrix elements has to be dumped.
 #----------------------------------------------------------------#
 
 # Folder names
-#folder_fv: "fv_hetg_24_flat_mu_100_ar_0.7_run5" #"lin_a_m1em3"
-folder_fd: "fd_sajm_vdp_yvymys_inm_NN_Z1_A2_non_mu_100_Lmu_300_ar_0.7_run3" #"output_from_fd"
+folder_fv: "fv_sl_sajm_rdp_yvymys_nnm_NN_Z01_A2_tur2_r_mu_100_Lmu_3_ar_0.7_run1"
+folder_fd: "fd_sl_sajm_rdp_yvymys_nnm_NN_Z01_A2_tur2_r_mu_100_Lmu_3_ar_0.7_run1" #"output_from_fd"
 #fd_hetg_24_flat_rap_inm_mu_100_Lmu_300_ar_0.7_run1
 
 #----------------------------------------------------------------#
@@ -70,9 +71,15 @@ condor_requests:
 slurm_requests: #slurm job description
   GPU:
     enable: False
-    partition: a100
+    partition: v100_long #a100
     ngres: 1
 
-  cpus-per-task: 20
+  
+  CPU:
+    enable: True
+    cpus-per-task: 20
+    # partition: long_serial
+    partition: edr1_long_serial
+    purge: purge
 
-  modules: []
+modules: ["nvhpc/24.3"]

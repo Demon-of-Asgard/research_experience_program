@@ -97,9 +97,9 @@ public:
 
         for (int i = 0; i < nz; i++)
         {
-            //Hm[i] = 300.0;
+            // Hm[i] = 3.0;
 
-            Hm[i] = 300.0 * (1+1.0e-3 * rand() / RAND_MAX); // * (Z[i] + 600.0); //-1.0e-3 * (Z[i] + 600.0);
+            Hm[i] = 3.0 * (1+1.0e-2 * rand() / RAND_MAX); // * (Z[i] + 600.0); //-1.0e-3 * (Z[i] + 600.0);
         }
 
         std::cout << draw(50, "#") << std::endl;
