@@ -37,6 +37,18 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
             out->bex_im[idx(i, j)] = pmo * (2 * ct * bexr[0] + st * (bee[0] - bxx[0]));
 #endif
 
+#if defined(MAT_OSC_ON)
+            out->ee[idx(i, j)] += 0.0;
+            out->xx[idx(i, j)] += 0.0;
+            out->ex_re[idx(i, j)] += Hm[j] * exi[0];
+            out->ex_im[idx(i, j)] += -Hm[j] * exr[0];
+
+            out->bee[idx(i, j)] += 0.0;
+            out->bxx[idx(i, j)] += 0.0;
+            out->bex_re[idx(i, j)] += -Hm[j] * bexi[0];
+            out->bex_im[idx(i, j)] += Hm[j] * bexr[0];
+#endif
+
 #ifndef ADVEC_OFF
 #if defined(ADVEC_CENTER_FD)
             // 2) advection term: (central FD)

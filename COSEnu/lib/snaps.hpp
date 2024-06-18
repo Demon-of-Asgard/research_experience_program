@@ -204,15 +204,10 @@ void NuOsc::dump_rho(const FieldVar *ivstate, const uint t_)
                 rsnap_ofstream << Z[j] << "\t" << vz[i] << "\t"
                                << std::setprecision(16)
 
-                               << ivstate->ee[ij] << "\t"
-                               << ivstate->xx[ij] << "\t"
-                               << ivstate->ex_re[ij] << "\t"
-                               << ivstate->ex_im[ij] << "\t"
-
-                               << ivstate->bee[ij] << "\t"
-                               << ivstate->bxx[ij] << "\t"
-                               << ivstate->bex_re[ij] << "\t"
-                               << ivstate->bex_im[ij] << "\n";
+                               << ivstate->ee[ij] << "\t" << ivstate->xx[ij] << "\t"
+                               << ivstate->ex_re[ij] << "\t" << ivstate->ex_im[ij] << "\t"
+                               << ivstate->bee[ij] << "\t" << ivstate->bxx[ij] << "\t"
+                               << ivstate->bex_re[ij] << "\t" << ivstate->bex_im[ij] << "\n";
             }
             rsnap_ofstream << "\n";
         }
