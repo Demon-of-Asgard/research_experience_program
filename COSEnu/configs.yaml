@@ -63,3 +63,13 @@ condor_requests:
   ncpu: 16
   ram: 10G
   storage: 20G
+
+slurm_requests: #slurm job description
+  GPU:
+    enable: False
+    partition: a100
+    ngres: 1
+
+  cpus-per-task: 20
+
+modules: ["nvhpc/24.3"]
