@@ -1,0 +1,3 @@
+#!/bin/bash
+
+$(which python) /hetghome/manug/research_experience_program/COSEnu/manage.py $@

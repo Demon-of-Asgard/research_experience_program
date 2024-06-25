@@ -319,7 +319,6 @@ void NuOsc::vectorize(FieldVar *v0, const FieldVar *v1, const real a, const Fiel
 
 void NuOsc::step_rk4()
 {
-
     // Step-1
     updateBufferZone(v_stat);
     calRHS(v_rhs, v_stat);
