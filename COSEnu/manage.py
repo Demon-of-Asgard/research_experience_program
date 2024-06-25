@@ -270,6 +270,11 @@ def configure(scheme="fv"):
 
 def compi(comp_opt = "--acc"):
     """To compile the code"""
+
+    with open(batch_configs_file, "r") as con:
+        configs = yaml.load(con, Loader=yaml.FullLoader)
+    modules = configs["modules"]
+
     pwd = os.getcwd()
     os.chdir(resources_dir)
     exe_path = os.path.join(os.getcwd(), TARGET)
@@ -293,7 +298,19 @@ def compi(comp_opt = "--acc"):
         else:
             return None, None
     elif comp_opt == "--acc":
-        comp_stat = os.system(f"{PCC} {OPT} -acc -Minfo=accel -ta=tesla:managed -o {TARGET} {SOURCE}")
+        with open ("compile.sh", "w") as f:
+            f.write("#!/bin/bash" + "\n")
+            f.write("module purge" + "\n")
+            for module in modules:
+                f.write(f"module load {module} \n")
+            f.write("make" + "\n")
+        os.system("chmod +x compile.sh")
+        with open ("Makefile", "w") as f:
+            f.write("#!/bin/bash" + "\n")
+            f.write("all:" + "\n")
+            f.write("\t" + f"{PCC} {OPT} -acc -Minfo=accel -ta=tesla:managed -o {TARGET} {SOURCE}" + "\n")
+
+        comp_stat = os.system(f"./compile.sh")
 
         if comp_stat == 0:
             print(f"{TARGET} generated for accelerated job")
@@ -370,6 +387,8 @@ def run(jobs_list, scheme_dir_path, submit_mod):
 
             with open (os.path.join(pwd, batch_configs_file), 'r') as f:
                 configs = yaml.load(f, Loader=yaml.FullLoader)
+
+            reqd_modules = configs["modules"]
             
             slurm_requests = configs["slurm_requests"]
 
@@ -380,7 +399,9 @@ def run(jobs_list, scheme_dir_path, submit_mod):
                     f.write(f"#SBATCH --partition={slurm_requests['GPU']['partition']}" + "\n")
                     f.write(f"#SBATCH --gres=gpu:{slurm_requests['GPU']['ngres']}" + "\n")
                 f.write(f"#SBATCH --cpus-per-task={slurm_requests['cpus-per-task']}" + "\n")
+
                 for module in slurm_requests['modules']:
+
                     f.write(f"module load {module}" + "\n")
                 f.write(f"srun ./{TARGET} --id {job} --conf {config_file}" + "\n")
         

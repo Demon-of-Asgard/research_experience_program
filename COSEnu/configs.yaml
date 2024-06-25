@@ -72,4 +72,4 @@ slurm_requests: #slurm job description
 
   cpus-per-task: 20
 
-  modules: []
+modules: ["nvhpc/24.3"]
