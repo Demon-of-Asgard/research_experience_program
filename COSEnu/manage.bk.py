@@ -24,42 +24,47 @@ except ImportError:
 
 # --------------------------------------------------------------------------------------------------
 
-# Job Compilation options specifier decalrations
-ACC_OPT = '--acc'
-PROFILE_OPT = '--prof'
-MULTI_CORE_OPT = '--mcore'
-SINGLE_CORE_OPT = '--score'
+instructions = """ General instructions:
+    
+        [ INITIALIZE ]
+        ==============================================================
+        python manage.py [opt] [scheme] --s [submission_target]
+        [opt] : Initialize (= Configure + compile)  the jobs.
+            opt : 
+                --score, --mcore, --acc
+                --score : Single core job
+                --mcore : Multicore job
+                --acc   : GPU accelerated job
+            scheme:
+                fv : Simulation using finite volume method with 7th order WENO.
+                fd : Simulation using finite difference method with 3rd order Kreiss-Oliger dissipation.
+            submission_target:
+                loc : local system. e.g. laptop
+                condor : submit with condor queueing system. e.g., slurm
+	
+        eg:
+            Run finite volume scheme  with condor   : $ python manage.py  --acc fv --s condor
+            Run finite difference scheme on laptop : $ python manage.py  --acc fd --s loc
 
-#Job submission options
-LOC = "loc"
-CONDOR = "condor"
-SLURM = "slurm" 
 
-instructions = ("\n" + 
-    f"""                              HELP
-    Run :
-    -----
-    +---------------------------------------------------------------+
-    | $python manage.py  [compile_opt] [scheme] < --s [submit_opt]> |
-    +---------------------------------------------------------------+
-    Note: < ... > is optional
+        [ RUN ]
+        ==============================================================
 
-    [ compile_opt ] :
-    -----------------
-        {SINGLE_CORE_OPT} : Single core job
-        {MULTI_CORE_OPT} : Multicore job
-        {ACC_OPT}   : GPU accelerated job
+        To run the code after this, traverse to the job directory and run the 
+        executable by 
+    
+        $./main --id <ID> --conf job.config 
 
-    [submit_opt] :
-    --------------
-        {LOC}    : Local submission
-        {CONDOR} : Submit with condor
-        {SLURM}  : Submit with slurm 
-    eg:
-        Run FV scheme with gpu & submit with slurm : $ python manage.py  {ACC_OPT} fv --s {SLURM}
-        Run FD scheme with gpu & submit locally    : $ python manage.py  {ACC_OPT} fd --s {LOC}
-    """
-    )
+        <ID> here can be anythin to tag the output. name of the job directory is preffered.
+
+                            OR
+
+        To restart a truncated job from stored data(in the .bin files), use
+
+        $./main --id <ID> --ff --conf job.config.
+
+        Here <ID> has to be the <ID> used in the truncated job.
+	"""
 # --------------------------------------------------------------------------------------------------
 
 presets_filename = "presets.hpp"
@@ -89,7 +94,7 @@ resources_dir = os.path.join(proj_dir, "lib")
 presets_file = os.path.join(resources_dir, presets_filename)
 
 # Configuration file for the collection of jobs.
-batch_configs_file = os.path.join(proj_dir, "configs.yaml")
+batch_configs_file = os.path.join(resources_dir, "configs.yaml")
 
 #List of the jobs will be stored in this txt file.
 jobs_list_file = "jobs_list.txt"
@@ -362,31 +367,9 @@ def run(jobs_list, scheme_dir_path, submit_mod):
                 f.write (f"transfer_input_files = {config_file}" + "\n")
                 f.write ("queue 1")
 
-            os.system(f"condor_submit {condor_submission_file}")
-
-        elif submit_mod == "slurm":
-
-            print (f"Submitting {job} with {submit_mod}")
-
-            with open (os.path.join(pwd, batch_configs_file), 'r') as f:
-                configs = yaml.load(f, Loader=yaml.FullLoader)
-            
-            slurm_requests = configs["slurm_requests"]
-
-            with open("sjob.submit", "w") as f:
-                f.write("#!/bin/bash" + "\n")
-                f.write(f"#SBATCH --job-name={job}" + "\n")
-                if slurm_requests["GPU"]["enable"]:
-                    f.write(f"#SBATCH --partition={slurm_requests['GPU']['partition']}" + "\n")
-                    f.write(f"#SBATCH --gres=gpu:{slurm_requests['GPU']['ngres']}" + "\n")
-                f.write(f"#SBATCH --cpus-per-task={slurm_requests['cpus-per-task']}" + "\n")
-                for module in slurm_requests['modules']:
-                    f.write(f"module load {module}" + "\n")
-                f.write(f"srun ./{TARGET} --id {job} --conf {config_file}" + "\n")
-        
-            os.system("sbatch sjob.submit")
+        os.system(f"condor_submit {condor_submission_file}")
         os.chdir(pwd)
-        
+
     return "success"
 
 # --------------------------------------------------------------------------------------------------
@@ -451,9 +434,9 @@ if __name__ == "__main__":
 
             if sys.argv[i] == "--help":
                 print(instructions)
-                exit(0)
+                break
 
-            elif (sys.argv[i] == SINGLE_CORE_OPT) or (sys.argv[i] == MULTI_CORE_OPT) or (sys.argv[i] == ACC_OPT):
+            elif (sys.argv[i] == "--score") or (sys.argv[i] == "--mcore") or (sys.argv[i] == "--acc"):
                 mode  = sys.argv[i]                
                 i += 1
                 is_mode = True
@@ -469,11 +452,10 @@ if __name__ == "__main__":
                 submit_mod = sys.argv[i+1]
                 do_submit = True
                 print(f"Submission option set to {submit_mod}")
-            
 
     if not (is_mode and is_scheme):
         print ("You have not specified either the simulation [scheme] or compilation [opt]")
-        print("Run manage.py --help for instructions.")
+        print(instructions)
         sys.exit()
 
     if (not is_scheme and not is_mode):
