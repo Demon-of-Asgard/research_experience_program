@@ -35,7 +35,23 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
             out->bxx[idx(i, j)] = pmo * 2 * st * bexi[0];
             out->bex_re[idx(i, j)] = -pmo * 2 * ct * bexi[0];
             out->bex_im[idx(i, j)] = pmo * (2 * ct * bexr[0] + st * (bee[0] - bxx[0]));
+            // printf("st %f\n",st);
+            // printf("ct %f\n",ct);
+            // printf("bee %f\n",bee[0]);
 #endif
+
+#if defined(MAT_OSC_ON)
+            out->ee[idx(i, j)] += 0.0;
+            out->xx[idx(i, j)] += 0.0;
+            out->ex_re[idx(i, j)] += Hm[j] * exi[0];
+            out->ex_im[idx(i, j)] += -Hm[j] * exr[0];
+
+            out->bee[idx(i, j)] += 0.0;
+            out->bxx[idx(i, j)] += 0.0;
+            out->bex_re[idx(i, j)] += -Hm[j] * bexi[0];
+            out->bex_im[idx(i, j)] += Hm[j] * bexr[0];
+#endif
+
 
 #ifndef ADVEC_OFF
 #if defined(ADVEC_CENTER_FD)
@@ -96,7 +112,16 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
                 Ibxx += -2 * vw[k] * mu * (1 - vz[i] * vz[k]) * (bexr[0] * (expi + bexpi) + bexi[0] * (expr - bexpr)); // = -Ibee
                 Ibexr += vw[k] * mu * (1 - vz[i] * vz[k]) * ((bxx[0] - bee[0]) * (expi + bexpi) - bexi[0] * (eep - xxp - beep + bxxp));
                 Ibexi += vw[k] * mu * (1 - vz[i] * vz[k]) * ((bxx[0] - bee[0]) * (expr - bexpr) + bexr[0] * (eep - xxp - beep + bxxp));
+                // printf("i %i\n",i);
+                // printf("k %i\n",k);
+                // printf(" vz[k] %f\n",(vz[k]));
+                // printf("%f\n",vw[k] * mu * (1 - vz[i] * vz[k]));
+                // printf("dv %f\n",dv);
+                // printf("Iexr %f\n",Iexr);
+                // printf("Iexi %f\n",Iexi);
+                // getchar();
             }
+            // getchar();
             // 3.1) calculate integral with simple trapezoidal rule
             out->ee[idx(i, j)] += dv * Iee;
             out->xx[idx(i, j)] += dv * Ixx;
@@ -106,6 +131,8 @@ void NuOsc::calRHS(FieldVar *out, const FieldVar *in)
             out->bxx[idx(i, j)] += dv * Ibxx;
             out->bex_re[idx(i, j)] += dv * Ibexr;
             out->bex_im[idx(i, j)] += dv * Ibexi;
+            // printf("%f\n",out->ee[idx(i, j)]);
+            // getchar();
 #endif
             // end of mu-part
 

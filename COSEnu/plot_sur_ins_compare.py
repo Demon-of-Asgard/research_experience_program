@@ -183,6 +183,9 @@ for h in os.listdir(path):
     plt.xlim(0,xli)
     #plt.legend(bbox_to_anchor=(1.1, 1.05))
     plt.legend()
+    plt.show()
+    print(pign)
+    sys.exit()
     plt.savefig(pign)
 
                 #plt.close('all')

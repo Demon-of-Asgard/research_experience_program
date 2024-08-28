@@ -1,11 +1,13 @@
 # CONFIGURATIONS FOR THE SIMULATION.
 #python manage.py --mcore fd --s condor
+# python manage.py --mcore fd --s loc
+# python3 manage.py  --mcore fd --s slurm
 #----------------------------------------------------------------#
 
 # Spatial domain specifics.
-zrange: [-1, 1]
-nzs: [1,10,100,500,1000] #[3600]
-CFLS: [0.0001,0.00001]
+zrange: [-1000.0, 1000.0]
+nzs: [8000,10000,12000] #,2000,2500] #[3600]
+CFLS: [0.025,0.02] # ,0.01,0.005] #,0.05,0.02] #,0.05,0.01,0.005] #[1,0.2,0.1,0.05,0.01,0.001,0.0001] #,0.01,0.001,0.0001]
 #CFLS: [0.0001,0.001]
 
 #----------------------------------------------------------------#
@@ -13,7 +15,7 @@ CFLS: [0.0001,0.00001]
 # Phase-space specifics.
 v0: -1.0
 v1: 1.0
-nvzs: [2] #[2,8,32,64,90,180] #[32]
+nvzs: [20,30] #[20,30] #[2,8,32,64,90,180] #[32]  
 
 #----------------------------------------------------------------#
 
@@ -21,21 +23,21 @@ boundary: periodic # Options ->  periodic, open
 
 #----------------------------------------------------------------#
 
-end_time: 400 # Physical end time
+end_time: 2000  # Physical end time
 
 #----------------------------------------------------------------#
 
-perturbation_size: 1e-8 #1e-2
+perturbation_size: 1e-7 #1e-7 #1e-2
 
-#----------------------------------------------------------------#
+#-------------------------------------------------------------------#
 
 # Switch on/off advection.
-advection_off: True # Options -> True, False
+advection_off: False # Options -> True, False
 
 # Switch on/off vacuum oscillation
-vac_osc_on: True # options -> True, False
+vac_osc_on: True # options -> True, Falserrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
 pmo: 1.0 # 1.0 -> normal mass ordering, -1.0 -> inverted mass ordering, 0.0 -> no vacuum term.
-omega: -0.01 #1e-2 #1.0 #1e-4 \Dedlta m^2/2E.
+omega: 0.004 #1e-2 #1.0 #1e-4 \Dedlta m^2/2E.
 theta: 0 # 37 Vacuum mixing angle in degrees.
 
 mat_osc_on:  True #True
@@ -45,34 +47,44 @@ collective_osc_on: True # Options -> True, False
 mu: 1.0 #1.0 \sqrt{2} G_F n_{\nu_e}
 #----------------------------------------------------------------#
 # ANALYSIS
-#----------------------------------------------------------------#
+#-----------------------------------------------------------------#
 
 # To analyze the behaviour of the conserved quantities.
-n_analyze: 100 # Total number of analysis to be carried out per job.
+n_analyze: 500 # Total number of analysis to be carried out per job.
 
 # To capture the the field variables for all the velocities over entire domain.
-n_dump_rho: 100 # number of times density matrix elements has to be dumped.
+n_dump_rho: 500 # number of times density matrix elements has to be dumped.
 
 #----------------------------------------------------------------#
 
-# Folder names
-#folder_fv: "fv_hetg_24_flat_mu_100_ar_0.7_run5" #"lin_a_m1em3"
-folder_fd: "fd_sajm_vdp_yvymys_inm_NN_Z1_A2_non_mu_100_Lmu_300_ar_0.7_run3" #"output_from_fd"
+# Folder names matter 1sin03k 1gau01  k010306p7 1tur opctk3m0
+#for perturbation p7eig06ri (kto3p7 k to 3 perturb 7) 4sin05k ctk3km1 
+# opctk3k on phase cos to k 3  opctk3m1 opkt3p7m1 opkt3p7m0  opstk3m1
+# purturb opkt3p7m1 k010306p7
+# folder_fv: "fv_sajm_adv_k010306p7_yvymys_nnm_NN_Z1000_A2_1sin03k_mu_200_Lmu_30_ar_0.7_run3"
+folder_fd: "fd_sajm_adv_ett_opkt3p7m1_yvymys_nnm_NN_Z1000_AN_non_mu_250_Lmu_30_ar_0.7_run1" #"output_from_fd"
+#           fd_sajm_adv_ett_kt3p7_yvymys_nnm_NN_Z1000_A2_ctk3km1_mu_250_Lmu_30_ar_0.7_run1
+#           fd_sajm_adv_k010306p7_yvymys_nnm_NN_Z1000_A2_1tur_mu_200_Lmu_30_ar_0.7_run1
+# no fd there is not matter terms inside fd!!!
 #fd_hetg_24_flat_rap_inm_mu_100_Lmu_300_ar_0.7_run1
 
 #----------------------------------------------------------------#
 
 condor_requests:
-  ncpu: 12
+  ncpu: 32
   ram: 10G
   storage: 20G
-  
+
 slurm_requests: #slurm job description
   GPU:
     enable: False
-    partition: a100
+    partition: CPU
     ngres: 1
+  CPU:
+    partition: CPU
+  cpus-per-task: 32
 
-  cpus-per-task: 20
-
+  machine: 
+    Exclude: True
+    node: hetg4
   modules: []

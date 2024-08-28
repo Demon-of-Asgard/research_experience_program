@@ -57,7 +57,7 @@ public:
         CFL = CFL_;
         gz = gz_; // Width of z-buffer zone. 4 for 2nd-order of d/dz.
 
-        ko = 1.0e-1;
+        ko = 1.0e-1; //supress for the high freq
 
         perturbation_size = perturbation_size_;
 
@@ -77,7 +77,8 @@ public:
 
         dz = (z1 - z0) / nz;
         dv = (vz1 - vz0) / (nvz); // cell-center
-        //dv = 1.0;
+        // dv = 2.0;322
+        
         dt = CFL * dz / vz1;
 
         for (int i = 0; i < nz; i++)
@@ -85,21 +86,70 @@ public:
             Z[i] = z0 + (i + 0.5) * dz;
         }
 
-        vz[0] = -1.0;
-        vz[1] = 1.0;
-  
-        // for (int i = 0; i < nvz; i++)
+        // vz[0] = -1.0;
+        // vz[1] = 1.0;
+        // vw[0] = 1.0;
+        // vw[1] = 1.0;
+
+        for (int i = 0; i < nvz; i++)//
+        {
+            vz[i] = vz0 + (i + 0.5) * dv;
+            vz[i] = vz0 + (i) * dv;
+            vw[i] = 1.0;
+        }
+
+        // inline double epsr(double z, double z0, double amp,double rdph[20000])
         // {
-        //     //vz[i] = vz0 + (i + 0.5) * dv;
-        //     vz[i] = vz0 + (i) * dv;
-        //     vw[i] = 1.0;
+        //     double km = 3.0;
+        //     double Zm=20000.0;
+        //     double rtn=0.0;
+        //     for(int i=0;i<20000;i++){
+        //         rtn += cos((i+1.0) / Zm * km * z + rdph[i]);
+        //     }
+        //     return amp * rtn / Zm;
         // }
 
+        unsigned int seed = 44444;
+        double km = 3.0;
+        int Zm = 20000;
+        double rdph[Zm];
+        double rtn;
+        double kmd;
+        double Nor=0.0;
+        srand(seed);
+        for(int i = 0; i<20000;i++){
+        rdph[i] = (double)rand() / RAND_MAX * 2 * M_PI;
+        }
+        for (int i = 0; i < nz; i++){
+            Nor+=((float)i+1.0) / Zm * km;
+        }
         for (int i = 0; i < nz; i++)
         {
-            //Hm[i] = 300.0;
-
-            Hm[i] = 300.0 * (1+1.0e-3 * rand() / RAND_MAX); // * (Z[i] + 600.0); //-1.0e-3 * (Z[i] + 600.0);
+            // double exponant = (v - v0) * (v - v0) / (2.0 * sigma * sigma);
+            double sigma = 0.1;
+            double N = sigma * sqrt(M_PI / 2.0) * (erf((1.0) / sigma / sqrt(2.0)) + erf((1.0) / sigma / sqrt(2.0)));
+            // double N = sigma * sqrt(M_PI / 2.0) * (erf((1.0 + v0) / sigma / sqrt(2.0)) + erf((1.0 - v0) / sigma / sqrt(2.0)));
+            // return exp(-exponant) / N;
+            // Hm[i] = 30.0 * (1+ 1.0e-4 * exp(-(Z[i] * Z[i])/ (2 * sigma * sigma)) / N);
+            rtn=0.0;
+            for(int j=0;j<Zm;j++){
+                kmd = ((float)j+1.0) / Zm * km;
+                // rtn += cos(kmd  * Z[i] + rdph[i])/ kmd;
+                // rtn += cos(kmd  * Z[i] + rdph[j]) / (float)Zm * 2 / kmd;
+                // rtn += (cos(kmd  * Z[i] + rdph[j])) / (float)Zm * 2;
+                // rtn += (cos(kmd  * Z[i])) / (float)Zm / (kmd) / (kmd) / (kmd) / Zm * km / Zm * km / Zm * km;
+                // rtn += (cos(kmd  * Z[i])) / (float)Zm / (kmd) / (kmd) / Zm * km / Zm * km;
+                rtn += (sin(kmd  * Z[i])) / (float)Zm / (kmd);
+                // rtn += (sin(kmd  * Z[i])) / (float)Zm;
+                // printf("%f rdph \n",rdph[i]);
+                // printf("%f rtn  test test\n", 2.0/3);
+            }
+            printf("%f rtn \n",rtn);
+            // Hm[i] = 30.0 * (1.0 + rtn);
+            Hm[i] = 30.0;
+            // return amp * sin(0.2 * M_PI * z);
+            // Hm[i] = 30.0 * (1+1.0e-4 * sin(0.5 * Z[i]));
+            // Hm[i] = 30.0 * (1+1.0e-2 * (double)rand() / RAND_MAX); // * (Z[i] + 600.0); //-1.0e-3 * (Z[i] + 600.0);
         }
 
         std::cout << draw(50, "#") << std::endl;

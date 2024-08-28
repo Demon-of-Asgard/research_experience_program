@@ -101,6 +101,10 @@ config_file = "job.config"
 
 # For submitting with condor
 condor_submission_file = "submit.jdl"
+manual_init_file_vn = "vn_eig.txt"
+manual_init_file_path_vn = os.path.join(proj_dir, manual_init_file_vn)
+manual_init_file_vp = "vp_eig.txt"
+manual_init_file_path_vp = os.path.join(proj_dir, manual_init_file_vp)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -326,6 +330,7 @@ def cp_exe(scheme_dir_path, exe_path):
             print (f"copied {exe_path} to {dst}")
                 
     return "success", jobs_list
+
     
 # --------------------------------------------------------------------------------------------------
 
@@ -377,11 +382,22 @@ def run(jobs_list, scheme_dir_path, submit_mod):
                 f.write("#!/bin/bash" + "\n")
                 f.write(f"#SBATCH --job-name={job}" + "\n")
                 if slurm_requests["GPU"]["enable"]:
+                    print(slurm_requests["GPU"]["enable"])
                     f.write(f"#SBATCH --partition={slurm_requests['GPU']['partition']}" + "\n")
                     f.write(f"#SBATCH --gres=gpu:{slurm_requests['GPU']['ngres']}" + "\n")
-                f.write(f"#SBATCH --cpus-per-task={slurm_requests['cpus-per-task']}" + "\n")
-                for module in slurm_requests['modules']:
+                    # f.write(f"## hahaha" + "\n")
+                else:
+                    print('haha')
+                    print("slurm gpu enable request ->",slurm_requests["GPU"]["enable"])
+                    f.write(f"#SBATCH --partition={slurm_requests['CPU']['partition']}" + "\n")
+                    # f.write(f"#SBATCH --gres=gpu:{slurm_requests['GPU']['ngres']}" + "\n")
+                    f.write(f"#SBATCH --cpus-per-task={slurm_requests['cpus-per-task']}" + "\n")
+                for module in slurm_requests["modules"]:
                     f.write(f"module load {module}" + "\n")
+                # f.write(f"export LD_LIBRARY_PATH=/lib64:$LD_LIBRARY_PATH" + "\n")
+                # f.write(f"source /lib64/libgomp.so.1" + "\n")
+                if slurm_requests["machine"]["Exclude"]:
+                    f.write(f"#SBATCH --exclude={slurm_requests['machine']['node']}" + "\n")
                 f.write(f"srun ./{TARGET} --id {job} --conf {config_file}" + "\n")
         
             os.system("sbatch sjob.submit")
@@ -410,6 +426,20 @@ def main(mode, scheme, submit_mod = "loc", do_submit = False):
     if compi_stat == "success":
         """Copy executable to the folders"""
         cp_stat, jobs_list = cp_exe(scheme_dir_path, exe_path)
+        print(jobs_list)
+
+        for job in jobs_list:
+            dstn = os.path.join(scheme_dir_path, job, manual_init_file_vn)
+            dstp = os.path.join(scheme_dir_path, job, manual_init_file_vp)
+            # print(f"Copying {manual_init_file_path} to {dst}")
+            _ = shutil.copy(
+                manual_init_file_path_vn,
+                dstn, 
+            )
+            __ = shutil.copy(
+                manual_init_file_path_vp,
+                dstp, 
+            )
     else:
         print("Compilation failed")
         return

@@ -5,5 +5,4 @@
 #define VAC_OSC_ON
 #define MAT_OSC_ON
 #define COLL_OSC_ON
-#define ADVEC_OFF
 
