@@ -358,6 +358,8 @@ def run(jobs_list, scheme_dir_path, submit_mod):
                 f.write (f"request_cpus = {jdl_configs['ncpu']}" + "\n")
                 f.write (f"request_memory = {jdl_configs['ram']}" + "\n")
                 f.write (f"request_disk = {jdl_configs['storage']}" + "\n")
+                f.write (f"transfer_error  = true" + "\n")
+                f.write (f"transfer_output  = true" + "\n")
                 f.write ("error = $(ID).err" + "\n")
                 f.write ("output = $(ID).out" + "\n")
                 f.write ("log = $(ID).log" + "\n")

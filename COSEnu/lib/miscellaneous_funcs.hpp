@@ -142,16 +142,17 @@ inline double epsr(double z, double z0, double amp,double rdph[20000])
     // return amp * exp(-(z - z0) * (z - z0) / 0.001);
 
     // return amp * sin(500.0 * z);
-    // return amp * (double)rand() / RAND_MAX;
+    
     double km = 3.0;
     double Zm=20000.0;
     double rtn=0.0;
     for(int i=0;i<(int)Zm;i++){
         // rtn += cos((i+1.0) / Zm * km * z + rdph[i]);
-        rtn += cos((i+1.0) / Zm * km * z) / Zm /((i+1.0) / Zm * km);
-        // rtn += cos((i+1.0) / Zm * km * z) / Zm;
+        // rtn += cos((i+1.0) / Zm * km * z) / Zm /((i+1.0) / Zm * km);
+        rtn += cos((i+1.0) / Zm * km * z) / Zm;
         // printf("%f\n",rdph[i]);
     }
+    // return amp * (double)rand() / RAND_MAX;
     // return amp * (sin(0.1 * z)+sin(0.3 * z)+sin(0.6 * z)) / 3.0;
     return amp * rtn;
     // return 
@@ -169,13 +170,14 @@ inline double epsi(double z, double z0, double amp,double rdph[20000])
     double rtn=0.0;
     for(int i=0;i<(int)Zm;i++){
         // rtn += sin((i+1.0) / Zm * km * z + rdph[i]);
-        // rtn += sin((i+1.0) / Zm * km * z)  / Zm;
-        rtn += sin((i+1.0) / Zm * km * z)  / Zm / ((i+1.0)/ Zm * km);
+        rtn += sin((i+1.0) / Zm * km * z)  / Zm;
+        // rtn += sin((i+1.0) / Zm * km * z)  / Zm / ((i+1.0)/ Zm * km);
         // rtn += sin((i+1.0) / Zm * km * z)  / Zm;
         // printf("%f\n",rdph[i]);
     }
     // return amp * (sin(0.1 * z)+sin(0.3 * z)+sin(0.6 * z)) / 3.0;
     return amp * rtn;
+    // return 0.0;
     // return 
     //return amp;
 }

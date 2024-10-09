@@ -1,4 +1,182 @@
 #!/hetghome/hetgsoft/anaconda3/bin/python3.9
+# this is for plotting the omega version
+#sed -i 's/\r//g' plot_insta_map_km.py
+import matplotlib
+#matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import math as m
+import math
+from scipy.optimize import fsolve
+from scipy import linalg
+import csv
+import pandas as pd
+import sys
+import numpy as np
+import os
+from scipy.integrate import RK45
+import time
+import seaborn as sns
+from os.path import exists
+from matplotlib import rc
+plt.rcParams['xtick.direction']='in'
+plt.rcParams['ytick.direction']='in'
+rc('font',**{'family':'serif','serif':['Roman'],'size':20})
+plt.rc('legend', fontsize=10) 
+plt.rc('xtick', labelsize=15)    
+plt.rc('ytick', labelsize=15)
+rc('text', usetex=True)
+if True == False:#this is for plotting the map in the appendix for small k
+    mude = 0.3
+    Hmu=1200
+    sml = np.log(Hmu/10000)/(-mude)
+    lml = np.log(111/10000)/(-mude)
+    print(sml)
+    omg=1
+    mu0=10000
+    for h in range(2):
+        if h ==0:
+            small = True
+            print('small',small)
+        else:
+            small = False
+        # pth = '/hetghome/jordan/NeuOsc/PAP_kmin/f_insta_map/'
+        pth = '/hetghome/jordan/Cose_nu/research_experience_program/COSEnu/f_insta_map/'
+        for hi in os.listdir(pth):
+            if '_f' in hi:
+                continue
+            if '_fpg' in hi:
+                continue
+            if 'ppr' not in hi:
+                continue
+            # print(hi)
+            if 'png' not in hi:
+                if 'jpg' not in hi:
+                    dtn = hi
+                    if 'ar' in hi:
+                        Lmu = (dtn[dtn.find('_Lmu_')+5:dtn.find('_ar_')])
+                    else:
+                        Lmu = (dtn[dtn.find('_Lmu_')+5:dtn.find('.npy')])
+                    if Lmu != str(3):
+                        print('lmu conti')
+                        continue
+                    if small == True:
+                        sfn = "./f_insta_map/prd_ppr_insta_map_small_bi_Lmu_"+Lmu+"tick.jpg"
+                    else:
+                        sfn = "./f_insta_map/prd_ppr_insta_map_big_bi_Lmu_"+Lmu+"tick.jpg"
+                    if 'ar' and 'deg' in hi:
+                        print('haha')
+                        ar = (dtn[dtn.find('_ar_')+4:dtn.find('_deg_')])
+                        deg = (dtn[dtn.find('_deg_')+5:dtn.find('.npy')])
+                        if small == True:
+                            nfn = "./f_insta_map/prd_ppr_insta_map_small_bi_Lmu_"+Lmu+"_ar_"+ar+"_deg_"+deg+"tick.jpg"
+                        else:
+                            nfn = "./f_insta_map/prd_ppr_insta_map_big_bi_Lmu_"+Lmu+"_ar_"+ar+"_deg_"+deg+"tick.jpg"
+                        sfn=nfn
+                    else: 
+                        nfn=sfn
+                    print(exists(sfn))
+                    print(exists(nfn))
+                    if exists(nfn)== True:
+                        print(nfn)
+                        print('pig exist')
+                        continue
+                    if exists(sfn)== True:
+                        print(sfn)
+                        print('pig exist')
+                        continue
+                    #if (exists(sfn) == False) and (exists(nfn) == False):
+                    apa = float(ar)
+                    if apa != 0.7:
+                        print('apa conti')
+                        continue
+                    if apa==1:
+                        print('apa conti')
+                        continue
+                    if os.path.isfile(nfn) != os.path.isfile(sfn): 
+                        trash = 1
+                        print('isfile')
+                    else:
+                        #dtn = "/hetghome/jordan/NeuOsc/PAP_muti_shape_repro/f_insta_map_explore/Lk_-6_Hk_6_Lz_0_Hz_15_Lmu_200.npy"
+                        DATA = np.load(pth+dtn)
+                        #DATA = np.load(pth+'/Lk_-6_Hk_6_Lz_0_Hz_15_Lmu_300_ar_0.8_deg_60.0.npy')
+                        #A = DATA[:50]+DATA[-50:]
+                        #print)(A[:,[0]])
+                        #sys.exit()
+                        """X = DATA[:,[0]]
+                        Y = DATA[:,[1]]
+                        x,y = np.meshgrid(X,Y)"""
+                        cm = plt.cm.get_cmap('RdYlBu')
+
+                        B = []
+                        G = []
+                        Y = []
+                        O = []
+                        R = []
+                        #X, Y, Z = grid(i[0], i[1], i[2])
+                        #plt.contourf(X, Y, Z)
+                        X = []
+                        Y = []
+                        Z = []
+                        print(small,'small')
+                        cou = 0
+                        jup=0
+                        for i in DATA:
+                            if jup%10 != 0:
+                                jup+=1
+                                continue
+                            if small == True:
+                                if i[0]>lml:
+                                    trash=1
+                                    # continue
+                                # if abs(i[1]/muz) > 10:
+                                #     continue
+                                if i[0]>sml:
+                                    # print(i[0])
+                                    muz=mu0*np.exp(-mude*i[0])
+                                    X.append(1/muz)
+                                    # X.append(i[0])
+                                    Y.append(i[1])
+                                    Z.append(i[2])
+                            else:
+                                if small == True:
+                                    print('small wrong')
+                                    sys.exit()
+                                X.append(i[0])
+                                Y.append(i[1])
+                                Z.append(i[2])
+                            #print(i[0])
+                            if cou%5000000 == 0:
+                                print(cou)
+                            cou +=1
+                            jup+=1
+                            """if cou%5000000 == 5000000-1:
+                                break"""
+                        #fig = plt.figure()
+                        #ax1 = fig.add_subplot(111)
+                        fig, axs = plt.subplots(1, 1,layout='constrained')
+                        ax1=axs#[0,0]
+                        ####
+                        """fig, ax1 = plt.subplots()
+                        ax2 = ax1.twiny()
+                        ax2.set_xlabel()"""
+                        #sc = ax1.scatter(X,Y,c = Z,cmap=cm, vmin=0, vmax=18,s=0.7)
+                        sc = ax1.scatter(X,Y,c = Z,cmap=cm,s=0.7)
+                        #divider = make_axes_locatable(plt.gca())
+                        #cax = divider.append_axes("right", "5%", pad="3%")
+                        plt.xlabel(r'$\omega(\mu^{-1})$')
+                        plt.ylabel(r'$k(\mu^{-1})$')
+                        plt.ylim(-2,2)
+                        plt.savefig(nfn,dpi=300)
+                        plt.show()
+
+                        #plt.colorbar(sc,cax=cax)
+                        #plt.savefig('/hetghome/jordan/NeuOsc/PAP_kmin/f_insta_map/test.jpg',dpi=400)
+                        sys.exit()
+                    
+    sys.exit()
+##########################################################old version
+#!/hetghome/hetgsoft/anaconda3/bin/python3.9
 #sed -i 's/\r//g' plot_insta_map_km_prd.py
 import matplotlib
 #matplotlib.use('Agg')
@@ -57,8 +235,8 @@ for hi in os.listdir(pth):
             ar = (dtn[dtn.find('_ar_')+4:dtn.find('_deg_')])
             deg = (dtn[dtn.find('_deg_')+5:dtn.find('.npy')])
             MUT = [10000,8500,7000,6000,5000,4000]
-            MUT = [200,175,150,125,100,75]
-            MUT = [130,110,90,70,50,30,10]
+            # MUT = [300,200,175,150,125,100,75]
+            # MUT = [130,110,90,70,50,30,10]
             LMUT = []
             for i in MUT:
                 LMUT.append(1/i)
@@ -99,7 +277,7 @@ for hi in os.listdir(pth):
             
             
             for i in DATA:
-                if jup%1 != 0:
+                if jup%10 != 0:
                     jup+=1
                     continue
                 xm = 10**4*m.exp(-0.3*i[0])
@@ -181,7 +359,7 @@ for hi in os.listdir(pth):
             #ax1.set_title(r'$ \theta $='+str(deg)+', $\u03B2$'+'='+str(Lmu)+', $\u03B1$'+str(ar))
                 
             ax1.set_xticks(XT)
-            ax1.set_xticklabels(MUT)
+            ax1.set_xticklabels(LMUT)
             ax1.set_xlabel("$1/\omega$")
             #ax2.spines['right'].set_visible(False)
             fig.colorbar(sc,shrink=1.0)
@@ -191,7 +369,7 @@ for hi in os.listdir(pth):
             #plt.ylim(-600000,600000)
             plt.ylim(km,-km)
             #plt.show()
-            plt.savefig(sfn,dpi=400)
+            # plt.savefig(sfn,dpi=400)
             sys.exit()
 
 

@@ -86,17 +86,17 @@ public:
             Z[i] = z0 + (i + 0.5) * dz;
         }
 
-        // vz[0] = -1.0;
-        // vz[1] = 1.0;
-        // vw[0] = 1.0;
-        // vw[1] = 1.0;
+        vz[0] = -1.0;
+        vz[1] = 1.0;
+        vw[0] = 1.0;
+        vw[1] = 1.0;
 
-        for (int i = 0; i < nvz; i++)//
-        {
-            vz[i] = vz0 + (i + 0.5) * dv;
-            vz[i] = vz0 + (i) * dv;
-            vw[i] = 1.0;
-        }
+        // for (int i = 0; i < nvz; i++)//
+        // {
+        //     vz[i] = vz0 + (i + 0.5) * dv;
+        //     vz[i] = vz0 + (i) * dv;
+        //     vw[i] = 1.0;
+        // }
 
         // inline double epsr(double z, double z0, double amp,double rdph[20000])
         // {
@@ -120,9 +120,9 @@ public:
         for(int i = 0; i<20000;i++){
         rdph[i] = (double)rand() / RAND_MAX * 2 * M_PI;
         }
-        for (int i = 0; i < nz; i++){
-            Nor+=((float)i+1.0) / Zm * km;
-        }
+        // for (int i = 0; i < nz; i++){
+        //     Nor+=((float)i+1.0) / Zm * km;
+        // }
         for (int i = 0; i < nz; i++)
         {
             // double exponant = (v - v0) * (v - v0) / (2.0 * sigma * sigma);
@@ -139,14 +139,16 @@ public:
                 // rtn += (cos(kmd  * Z[i] + rdph[j])) / (float)Zm * 2;
                 // rtn += (cos(kmd  * Z[i])) / (float)Zm / (kmd) / (kmd) / (kmd) / Zm * km / Zm * km / Zm * km;
                 // rtn += (cos(kmd  * Z[i])) / (float)Zm / (kmd) / (kmd) / Zm * km / Zm * km;
-                rtn += (sin(kmd  * Z[i])) / (float)Zm / (kmd);
-                // rtn += (sin(kmd  * Z[i])) / (float)Zm;
+                // rtn += (sin(kmd  * Z[i]+rdph[j])) / (float)Zm / pow(kmd, 5.0/6.0);
+                // rtn += (sin(kmd  * Z[i])) / (float)Zm / pow(kmd, 5.0/6.0);
+                // rtn += (sin(kmd  * Z[i]+rdph[j])) / (float)Zm;
+                rtn += (sin(kmd  * Z[i])) / (float)Zm;
                 // printf("%f rdph \n",rdph[i]);
                 // printf("%f rtn  test test\n", 2.0/3);
             }
             printf("%f rtn \n",rtn);
-            // Hm[i] = 30.0 * (1.0 + rtn);
-            Hm[i] = 30.0;
+            Hm[i] = 30.0 * (1.0 + 1.0e-0 * rtn);
+            // Hm[i] = 30.0;
             // return amp * sin(0.2 * M_PI * z);
             // Hm[i] = 30.0 * (1+1.0e-4 * sin(0.5 * Z[i]));
             // Hm[i] = 30.0 * (1+1.0e-2 * (double)rand() / RAND_MAX); // * (Z[i] + 600.0); //-1.0e-3 * (Z[i] + 600.0);
